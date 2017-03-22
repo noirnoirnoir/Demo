@@ -22,9 +22,9 @@ BEGIN
 	SELECT *
 	FROM
 	(	SELECT Convert(char(10),logdate,120) as logdate, 
-						 max([Total]) as [Total], max([Today]) as [Today], max([Live]) as [Live]
-		  			,max([SiteA]) as [SiteA], max([SiteASmart]) as [SiteASmart]
-						,max([SiteB]) as [SiteB], max([SiteC]) as [SiteC], max([SiteD]) as [SiteD], max([SiteE]) as [SiteE]
+		 	max([Total]) as [Total], max([Today]) as [Today], max([Live]) as [Live]
+			,max([SiteA]) as [SiteA], max([SiteASmart]) as [SiteASmart]
+			,max([SiteB]) as [SiteB], max([SiteC]) as [SiteC], max([SiteD]) as [SiteD], max([SiteE]) as [SiteE]
 
 		FROM
 		(	SELECT  logdate ,
@@ -32,7 +32,7 @@ BEGIN
 				sum(case when ServerID = 100002  THEN isnull(users,0) else 0 end) as [Today],
 				sum(case when ServerID = 100003  THEN isnull(users,0) else 0 end) as [Live],
 				sum(case when left(ServerID,3) = 101 and  
-							ServerID NOT IN(101111,101112) THEN isnull(users,0) else 0 end) as [SiteA],
+					      ServerID NOT IN(101111,101112) THEN isnull(users,0) else 0 end) as [SiteA],
 				sum(case when ServerID IN (101111,101112) THEN isnull(users,0) else 0 end) as [SiteASmart],
 				sum(case when left(ServerID,3) = 102 THEN isnull(users,0) else 0 end) as [SiteB],
 				sum(case when left(ServerID,3) = 103 THEN isnull(users,0) else 0 end) as [SiteC],
