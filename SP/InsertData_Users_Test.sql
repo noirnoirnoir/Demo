@@ -1,6 +1,6 @@
 
 
-alter PROCEDURE[dbo].[InsertData_TotalOnline_byDay_Test]
+alter PROCEDURE[dbo].[InsertData_Users_Test]
 	@Date smalldatetime = null
 AS
 
