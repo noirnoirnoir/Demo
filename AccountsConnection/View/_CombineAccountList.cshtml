@@ -1,0 +1,49 @@
+@model List<CombineAccountModel>
+@{
+    Layout = null;
+}
+
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+            <tr>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.No"></th>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.UserCode"></th>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.UserName"></th>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.CombinedCode"></th>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.CombinedName"></th>
+                <th class="col col-1 col-lg-1 col-sm-1" data-i18n="lang.Status"></th>
+                <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.Function"></th>
+            </tr>
+        </thead>
+    <tbody>
+            @{
+            if (Model != null)
+            {
+                int i = 1;
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.UserCode</td>
+                        <td>@item.UserName</td>
+                        <td>@item.CombinedCode</td>
+                        <td>@item.CombinedName</td>
+                        <td><span data-i18n="lang.@item.Status"></span></td>
+                        <td><button onclick="operator.showDetail('@item.Id')" class="btn btn-sm"><span data-i18n="lang.CombineConfirm"></span></button></td>
+                    </tr>
+
+                    i = ++i;
+                }
+
+
+                }
+            }
+        </tbody>
+</table>
+
+<style>
+    th, td {
+        text-align: center;
+    }
+</style>
+
