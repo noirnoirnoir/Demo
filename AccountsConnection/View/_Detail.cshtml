@@ -1,0 +1,382 @@
+@model CombineAccountModel
+@{
+    Layout = null;
+}
+
+<div class="CombineDetail">
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.CreateTime"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">
+            <span>@Model.CreatedTime</span>
+        </span>
+    </div>
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.ModifiedName"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">
+            <span>@Model.ModifiedName</span>
+        </span>
+    </div>
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.ModifiedDateTime"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">
+            <span>@Model.ModifiedDateTime</span>
+        </span>
+    </div>
+
+    <div class="row">                
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.UserName"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">                
+            <span>@Model.UserCode</span>
+            <span>@Model.UserName</span>
+        </span>
+    </div>
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.CombinedName"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">                   
+            <span>@Model.CombinedCode</span>
+            <span>@Model.CombinedName</span>
+        </span>
+    </div>   
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.PositionTo"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4" >                  
+            @{
+                if (Model.Position)
+                {<span data-i18n="lang.UpLine"></span>}
+                else
+                {<span data-i18n="lang.DownLine"></span>}
+
+            }
+        </span>
+    </div>
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.Status"></label>
+        </span>
+        <span class="col col-2 col-lg-2 col-sm-2"> 
+            <span id="FormStatus" data-i18n="lang.@Model.Status"></span>     
+            @*<label class="select">@Html.DropDownList("FormStatus", (IEnumerable<SelectListItem>)ViewData["FormStatusSelector"])<i></i></label>*@
+        </span>
+    </div>
+    <div class="row">
+        <span class="co1 col-1 col-lg-1 col-sm-1">
+            <label data-i18n="lang.File"></label>
+        </span>
+        <span class="col col-4 col-lg-4 col-sm-4">
+            <button onclick="operator.downLoadFile('@Model.Id','@Model.FileName')" class="btn btn-sm" data-i18n="lang.File"></button>                
+        </span>
+    </div>
+    <div class="row" style="padding-top:3%">
+        @{
+            if (Model.Status != FormStatus.InProcess)
+            {
+                <button  class="btn btn-sm" data-i18n="lang.Confirm" disabled></button>
+                <button  class="btn btn-sm" data-i18n="lang.Reject" disabled></button>
+            }
+            else
+            {
+                <button onclick="operator.UpdateCombineAccount()" class="btn btn-sm" data-i18n="lang.Confirm"></button>
+                <button onclick="operator.RejectCombineAccount()" class="btn btn-sm" data-i18n="lang.Reject"></button>
+            }
+        }
+        
+        <input type="hidden" id="Guid" value="@Model.Id" />
+    </div>
+</div>
+<hr />
+
+<div class="UserOrganization"  style="padding-top:5%">
+    <label style="font-size:medium"><span data-i18n="lang.UserName"></span>: @Model.UserName </label>
+    <div>
+        <span style="font-weight:bold" data-i18n="lang.UpLine"></span>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.No"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserCode"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserName"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UplineName"></th>
+                    <th class="col col-3 col-lg-3 col-sm-3" data-i18n="lang.Email"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.CellPhone"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ 
+                    if (Model != null)
+                    {
+                        if (Model.Organizations != null && Model.Organizations.Count > 0)
+                        {
+                            var UserOrganization = Model.Organizations[0];
+
+                            if (UserOrganization.Parents != null && UserOrganization.UserId != null)
+                            {
+                                int i = 1;
+                                var first = UserOrganization.Parents;
+                                if (first.Parents != null && first.UserId != null)
+                                {
+                                    var second = first.Parents;
+                                    <tr class="trFirst">
+                                        <td>@i</td>
+                                        <td>@second.UserCode</td>
+                                        <td>@second.UserName</td>
+                                        <td>@second.ParentName</td>
+                                        <td>@second.Email</td>
+                                        <td>@second.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                <tr class="trSecond">
+                                    <td>@i</td>
+                                    <td>@first.UserCode</td>
+                                    <td>@first.UserName</td>
+                                    <td>@first.ParentName</td>
+                                    <td>@first.Email</td>
+                                    <td>@first.CellPhone</td>
+                                </tr>
+                            }
+                        }
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+    <div style="padding-top:5%">
+        <span style="font-weight:bold" data-i18n="lang.DownLine"></span>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.No"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserCode"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserName"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UplineName"></th>
+                    <th class="col col-3 col-lg-3 col-sm-3" data-i18n="lang.Email"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.CellPhone"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model != null)
+                    {
+                        if (Model.Organizations != null && Model.Organizations.Count > 0)
+                        {
+                            var UserOrganization = Model.Organizations[0];
+
+                            if (UserOrganization.Childs != null)
+                            {
+                                int i = 1;
+                                List<OrganizationModel> _firstChild = new List<OrganizationModel>();
+                                foreach (var first in UserOrganization.Childs)
+                                {
+                                    if (first.Childs != null)
+                                    { _firstChild.AddRange(first.Childs); }
+
+                                    <tr class="trFirst">
+                                        <td>@i</td>
+                                        <td>@first.UserCode</td>
+                                        <td>@first.UserName</td>
+                                        <td>@first.ParentName</td>
+                                        <td>@first.Email</td>
+                                        <td>@first.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                List<OrganizationModel> _secondChild = new List<OrganizationModel>();
+                                foreach (var second in _firstChild)
+                                {
+                                    if (second.Childs != null)
+                                    { _secondChild.AddRange(second.Childs); }
+
+                                    <tr class="trSecond">
+                                        <td>@i</td>
+                                        <td>@second.UserCode</td>
+                                        <td>@second.UserName</td>
+                                        <td>@second.ParentName</td>
+                                        <td>@second.Email</td>
+                                        <td>@second.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                foreach (var third in _secondChild)
+                                {
+                                    <tr class="trThird">
+                                        <td>@i</td>
+                                        <td>@third.UserCode</td>
+                                        <td>@third.UserName</td>
+                                        <td>@third.ParentName</td>
+                                        <td>@third.Email</td>
+                                        <td>@third.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<hr />
+<div class="CombinedOrganization" style="padding-top:5%">
+    <label style="font-size:medium"><span data-i18n="lang.CombinedName"></span>: @Model.CombinedName </label>
+    <div >
+        <span style="font-weight:bold" data-i18n="lang.UpLine"></span>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.No"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserCode"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserName"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UplineName"></th>
+                    <th class="col col-3 col-lg-3 col-sm-3" data-i18n="lang.Email"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.CellPhone"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model != null)
+                    {
+                        if (Model.Organizations != null && Model.Organizations.Count > 1)
+                        {
+                            var CombinedOrganization = Model.Organizations[1];
+
+                            if (CombinedOrganization.Parents != null && CombinedOrganization.UserId != null)
+                            {
+                                int i = 1;
+                                var first = CombinedOrganization.Parents;
+                                if (first.Parents != null && first.UserId != null)
+                                {
+                                    var second = first.Parents;
+                                    <tr class="trFirst">
+                                        <td>@i</td>
+                                        <td>@second.UserCode</td>
+                                        <td>@second.UserName</td>
+                                        <td>@second.ParentName</td>
+                                        <td>@second.Email</td>
+                                        <td>@second.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                <tr class="trSecond">
+                                    <td>@i</td>
+                                    <td>@first.UserCode</td>
+                                    <td>@first.UserName</td>
+                                    <td>@first.ParentName</td>
+                                    <td>@first.Email</td>
+                                    <td>@first.CellPhone</td>
+                                </tr>
+                            }
+                        }
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+    <div style="padding-top:5%">
+        <span style="font-weight:bold" data-i18n="lang.DownLine"></span>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.No"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserCode"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UserName"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.UplineName"></th>
+                    <th class="col col-3 col-lg-3 col-sm-3" data-i18n="lang.Email"></th>
+                    <th class="col col-2 col-lg-2 col-sm-2" data-i18n="lang.CellPhone"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model != null)
+                    {
+                        if (Model.Organizations != null && Model.Organizations.Count > 1)
+                        {
+                            var CombinedOrganization = Model.Organizations[1];
+
+                            if (CombinedOrganization.Childs != null)
+                            {
+                                int i = 1;
+                                List<OrganizationModel> _firstChild = new List<OrganizationModel>();
+                                foreach (var first in CombinedOrganization.Childs)
+                                {
+                                    if (first.Childs != null)
+                                    { _firstChild.AddRange(first.Childs); }
+
+                                    <tr class="trFirst">
+                                        <td>@i</td>
+                                        <td>@first.UserCode</td>
+                                        <td>@first.UserName</td>
+                                        <td>@first.ParentName</td>
+                                        <td>@first.Email</td>
+                                        <td>@first.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                List<OrganizationModel> _secondChild = new List<OrganizationModel>();
+                                foreach (var second in _firstChild)
+                                {
+                                    if (second.Childs != null)
+                                    { _secondChild.AddRange(second.Childs); }
+
+                                    <tr class="trSecond">
+                                        <td>@i</td>
+                                        <td>@second.UserCode</td>
+                                        <td>@second.UserName</td>
+                                        <td>@second.ParentName</td>
+                                        <td>@second.Email</td>
+                                        <td>@second.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                                foreach (var third in _secondChild)
+                                {
+                                    <tr class="trThird">
+                                        <td>@i</td>
+                                        <td>@third.UserCode</td>
+                                        <td>@third.UserName</td>
+                                        <td>@third.ParentName</td>
+                                        <td>@third.Email</td>
+                                        <td>@third.CellPhone</td>
+                                    </tr>
+                                    i = ++i;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<style>
+    th, td {text-align:center; }
+    .trSelf   td {background-color:#ffffff; text-align:center; }
+    .trFirst  td {background-color:#f2f2f2; text-align:center; }
+    .trSecond td {background-color:#e6e6e6; text-align:center; }
+    .trThird  td {background-color:#cccccc; text-align:center; }
+</style>
+
