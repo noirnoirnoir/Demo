@@ -62,4 +62,4 @@ BEGIN
 	GROUP BY s.[site] , Convert(char(10),x.logdate,120)	
 END
 
-exec Dot_Admin_InsertData_TotalOnline_byDay_Test
+
