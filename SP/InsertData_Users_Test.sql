@@ -17,7 +17,7 @@ BEGIN
 	End
 
 	DELETE [TotalOnline_byDay] WHERE LogDate >=Convert(char(8),@Date,112) and logdate < Convert(char(8),@Date +1 ,112)
---- A site  ---
+--- A site Area  ---
 	INSERT INTO [dbo].[TotalOnline_byDay](LogDate, Users, SiteName)
 	SELECT *
 	FROM
@@ -49,7 +49,7 @@ BEGIN
 		Users FOR SiteName IN ([Total],[Today],[Live],[SiteA],[SiteASmart],[SiteB],[SiteC],[SiteD],[SiteE])
 	) as pv
 	
---- B site ---
+--- B site Area ---
 	INSERT INTO [dbo].[TotalOnline_byDay](LogDate, Users, SiteName)
 	SELECT Convert(char(10),x.LogDate, 120) as LogDate, max(x.users) as users, s.[site] as SiteName 
 	FROM (	SELECT LogDate,  SUM(users) as users, left(ServerID ,3) as serverID
