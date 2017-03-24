@@ -1,13 +1,13 @@
-using LitangOfficial.Backoffice.BusinessLogic.Model;
-using LitangOfficial.Backoffice.BusinessLogic.ViewModel;
-using LitangOfficial.Backoffice.Databases.Model;
-using LitangOfficial.Backoffice.Databases.Respositories;
+using xxx.Backoffice.BusinessLogic.Model;
+using xxx.Backoffice.BusinessLogic.ViewModel;
+using xxx.Backoffice.Databases.Model;
+using xxx.Backoffice.Databases.Respositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace LitangOfficial.Backoffice.BusinessLogic.Logistics
+namespace xxx.Backoffice.BusinessLogic.Logistics
 {
     public class CombineAccountLogic : ICombineAccountLogic
     {
