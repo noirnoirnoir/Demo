@@ -1,0 +1,68 @@
+@model List<CombineAccountModel>
+@{
+    Layout = null;
+}
+@Scripts.Render("~/bundles/CombineAccount")
+
+<div id="content">
+    <h1>
+        <i class="fa fa-th-list"></i>
+        <span data-i18n="lang.CombineAccount"></span>
+    </h1>
+    <hr />
+    <br />
+    <ul id="myTab1" class="nav nav-tabs bordered">
+        <li class="active">
+            <a href="#s1" data-toggle="tab" onclick="operator.redirectToIndex()"><i class="fa fa-fw fa-sitemap"></i> <span data-i18n="lang.CombineAccount"></span></a>
+        </li>
+        <li class="active">
+            <a href="#s2" data-toggle="tab" onclick=""><i class="fa fa-fw fa-sitemap"></i> <span data-i18n="lang.CombineDetail"></span></a>
+        </li>
+        <li class="">
+            <a id="prePage" onclick="operator.redirectIndexWithUser()"><i class="fa fa-fw fa-lg fa-backward"></i> <span data-i18n="Button.PrePage"></span></a>
+        </li>
+    </ul>
+    <div class="tab-content" style="padding:20px 30px 20px 30px;float: left;width: 100%;">
+        <div id="SearchContent">
+            <form method="post" id="SearchForm" class="smart-form" novalidate="novalidate">
+                <header>
+                    <span style="font-weight:bold" data-i18n="lang.SearchOption"></span>
+                </header>
+                <fieldset>
+                    <div class="row">
+                        <span class="co1 col-1 col-lg-1 col-sm-1"><label data-i18n="lang.UserCode"></label></span>
+                        <span class="col col-2 col-lg-2 col-sm-2">                        
+                            <label class="input" id="UserNameInput">
+                                <input type="text" name="UserCode" id="UserCode" class="inputBox" />
+                            </label>                                                                       
+                        </span>
+                        <span class="col col-2 col-lg-2 col-sm-2">
+                            <a onclick="operator.searchUser($(this))" class="btn btn-primary btn-sm" data-i18n="Button.Search"></a> 
+                        </span>
+                     </div>
+                    <br />
+                    <div class="row">
+                        <span class="co1 col-1 col-lg-1 col-sm-1"><label data-i18n="lang.Status"></label></span>
+                        <span class="col col-2 col-lg-2 col-sm-2">
+                            <label id="FormStatusSelect" class="select">@Html.DropDownList("FormStatus", (IEnumerable<SelectListItem>)ViewData["FormStatusSelector"])<i></i></label>
+                        </span>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <a onclick="operator.CheckUserExist()" class="btn btn-primary btn-sm" data-i18n="Button.Search"></a>                       
+                    </div>
+                    <br />
+                </fieldset>
+            </form>
+        </div>
+        <br/>        
+        <div id="ListContent">
+                                                  
+        </div>       
+    </div>
+</div>
+
+<style>
+    th, td { text-align: center; }
+
+</style>

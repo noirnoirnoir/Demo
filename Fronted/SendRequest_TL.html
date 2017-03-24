@@ -1,0 +1,389 @@
+<html>
+<head>
+    <title></title>
+    <link href="../css/css.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../CommonJS/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="../CommonJS/jQuery.ACSelected.js?v=20170101"></script>
+    <style type="text/css">
+        table.selectTB>tbody>tr:nth-child(1),
+        table.selectTB>tbody>tr:nth-child(2),
+        table.selectTB>tbody>tr:nth-child(3){background-color:#7591BD; color:#FFFFFF;}
+        table.selectTB>tbody>tr>th:nth-child(1),
+        table.selectTB>tbody>tr>th:nth-child(2){width:100px; text-align:right; border-right-style:hidden;}
+        table.selectTB>tbody>tr:nth-child(2)>td:nth-child(2),
+        table.selectTB>tbody>tr:nth-child(2)>td:nth-child(3),
+        table.selectTB>tbody>tr:nth-child(3)>td:nth-child(2){border-right-color:#7591BD}
+        
+        table.teamTB>tbody>tr>th {background-color:#ABD0DC;}
+        table.teamTB>tbody>tr>td {background-color:#ffffff; text-align:center;}
+        
+        .systemBusy
+	{
+		width: 18px;
+		height: 18px;
+		background-size: 18px 18px;
+		background-image: url('../images/Sys_DarkBlue.gif');
+	}
+    </style>
+    <script language="javascript" type="text/javascript">
+        function _HTTPStatusOK(code) 
+        {
+            return (code === 304 || (200 <= code && code <= 207));
+        }
+
+        function SendRequest(pUrl, pData, pType, callBack) 
+        {
+            var _data = {};
+            $.extend(_data, pData);
+            _default_Options = {
+                url: pUrl,
+                data: _data,
+                contentType: "application/x-www-form-urlencoded",
+                dataType: pType,
+                type: "POST",
+                ifModified: true,
+                complete: function (xhr, status) 
+                {
+                    //"success", "notmodified", "error", "timeout", "abort", "parsererror"
+                    $("#systemBusy").css({ "display": "none" });
+                    if (_HTTPStatusOK(xhr.status) && (status == "success" || status == "notmodified")) 
+                    {
+                        if (typeof (callBack) == "function") 
+                        {
+                            callBack(xhr, pData);
+                        }
+                    }
+                    else 
+                    {
+                        alert("Status: " + status + " , Data:" + xhr.responseText);
+                    }
+                }
+            };
+            $.ajax(_default_Options);
+
+        }
+
+        function ChangeSport() 
+        {
+            $("#systemBusy").css({ "display": "" });
+
+            var url = "TL.aspx";
+            SendRequest(url,
+            {
+                "SportType": $("#SelSport").val(),
+                      "Action" : "resetLeague"
+            },
+            "html",
+            SetLeagueOptions);
+
+        }
+
+        function ChangeLeague_Left() 
+        {
+            if ($("#SelLeague_L").val() != "") 
+            {
+                $("#systemBusy").css({ "display": "" });
+
+                var url = "TLQ.aspx";
+                SendRequest(url,
+                {
+                    "SportType": $("#SelSport").val(),
+                    "LeagueId_L": $("#SelLeague_L").val(),
+                    "Action": "getSelected"
+                },
+                "html",
+                SetSelectedOptions); //left side
+            }
+            else 
+            {
+                ClearOptions("SelLeft");
+            }
+
+            ResetTeamOptions();
+        }
+
+        function SubmitLeague_Left() 
+        {
+            ChangeLeague_Left();
+        }
+
+        function ChangeLeague_Right() 
+        {
+            if ($("#SelLeague_R").val() != "") 
+            {
+                $("#systemBusy").css({ "display": "" });
+                $("#SelPrefix").val("");
+
+                var url = "TeamLeagueQuery.aspx";
+                SendRequest(url,
+                {
+                    "SportType": $("#SelSport").val(),
+                    "LeagueId_L": $("#SelLeague_L").val(),
+                    "LeagueId_R": $("#SelLeague_R").val(),
+                    "Action": "getTeam"
+                },
+                "html",
+                SetTeamOptions); //right side
+            }
+        }
+
+        function SubmitLeague_Right() 
+        {
+            ChangeLeague_Right();
+        }
+
+        function ChangePrefix() 
+        {
+            $("#systemBusy").css({ "display": "" });
+            $("#SelLeague_R").val("");
+            $("#SelLeague_R").DestroyAC();
+
+            var url = "TLQ.aspx";
+            SendRequest(url,
+              {
+                "SportType": $("#SelSport").val(),
+                "LeagueId_L": $("#SelLeague_L").val(),
+                "Prefix": $("#SelPrefix").val(),
+                "Action": "getTeam"
+              },
+              "html",
+              SetTeamOptions); //right side
+
+			        $("#SelLeague_R").ACSelected({ "onSelected": SubmitLeague_Right });
+        }
+
+        function ResetTeamOptions() 
+        {
+            if ($("#SelLeague_R").val() != "")
+                ChangeLeague_Right();
+            
+            if ($("#SelPrefix").val() != "")
+                ChangePrefix();
+        }
+
+        function SetLeagueOptions(xhr, senderData) 
+        {
+            try 
+            {
+                ClearOptions("SelLeague_L");
+                ClearOptions("SelLeague_R");
+                ClearOptions("SelLeft");
+                ClearOptions("SelRight");
+                $("#SelLeague_L").DestroyAC();
+                $("#SelLeague_R").DestroyAC();
+                $("#SelPrefix").val("");
+                
+                if (jQuery.isEmptyObject(xhr.responseText)) 
+                {
+                    $("#SelLeague_L").html("");
+                    $("#SelLeague_R").html("");
+                }
+                else 
+                {
+                    $("#SelLeague_L").html(xhr.responseText);
+                    $("#SelLeague_R").html(xhr.responseText);
+                }
+
+                $("#SelLeague_L").ACSelected({ "onSelected": SubmitLeague_Left });
+                $("#SelLeague_R").ACSelected({ "onSelected": SubmitLeague_Right });
+            }
+            catch (err) 
+            {
+                alert("SetLeagueOptions: " + err.message);
+            }
+        }
+
+        function SetSelectedOptions(xhr, senderData) 
+        {
+            try 
+            {
+                ClearOptions("SelLeft");
+                if (jQuery.isEmptyObject(xhr.responseText)) 
+                {
+                    $("#SelLeft").html("");
+                }
+                else 
+                {
+
+                    $("#SelLeft").html(xhr.responseText);
+                }
+            }
+            catch (err) 
+            {
+                alert("SetSelectedOptions: " + err.message);
+            }
+        }
+
+        function SetTeamOptions(xhr, senderData) 
+        {
+            try 
+            {
+                ClearOptions("SelRight");
+                
+                if (jQuery.isEmptyObject(xhr.responseText)) 
+                {
+                    $("#SelRight").html("");
+                }
+                else 
+                {
+                    $("#SelRight").html(xhr.responseText);
+                }
+            }
+            catch (err) 
+            {
+                alert("SetTeamOptions: " + err.message);
+            }
+
+        }
+
+        function AddTeam() 
+        {
+            if ($("#SelLeague_L").val() == "") 
+            {
+                alert("Please select League on left side.");
+                return;
+            }
+
+            if ($('#SelRight').val()) 
+            {
+                $("#systemBusy").css({ "display": "" });
+
+                var url = "TLS.aspx";
+                SendRequest(url,
+                {
+                    "LeagueId": $("#SelLeague_L").val(),
+                    "TeamIds": $("#SelRight").val().toString(),
+                    "SportType": $("#SelSport").val(),
+                    "Prefix": $("#SelPrefix").val(),
+                    "Action": "ADD"
+                },
+                "text",
+                ChangeLeague_Left);
+
+            }
+			      else 
+            {
+                alert("Please select teams.");
+            }
+        }
+
+        function RemoveTeam() 
+        {
+            if ($("#SelLeague_L").val() == "") 
+            {
+                alert("Please select League on left side.");
+                return;
+            }
+
+            if ($('#SelLeft').val()) 
+            {
+                $("#systemBusy").css({ "display": "" });
+
+                var url = "TLS.aspx";
+                SendRequest(url,
+                {
+                    "LeagueId": $("#SelLeague_L").val(),
+                    "TeamIds": $("#SelLeft").val().toString(),
+                    "SportType": $("#SelSport").val(),
+                    "Action": "REMOVE"
+                },
+                "text",
+                ChangeLeague_Left);
+            }
+            else 
+            {
+			        alert("Please select teams.");
+			      }
+        }
+
+        function ClearOptions(objID) 
+        {
+            var selectObj = document.getElementById(objID);
+            var selectParentNode = selectObj.parentNode;
+            var newSelectObj = selectObj.cloneNode(false);
+            selectParentNode.replaceChild(newSelectObj, selectObj);
+            selectObj = null;
+        }
+
+        $().ready(
+		    function () {
+		        $("#SelLeague_L").css({ "width": $("#SelLeague_L").css("width") });
+		        $("#SelLeague_L").css({ "height": $("#SelLeague_L").css("height") });
+		        $("#SelLeague_L").ACSelected({ "onSelected": SubmitLeague_Left });
+
+		        $("#SelLeague_R").css({ "width": $("#SelLeague_R").css("width") });
+		        $("#SelLeague_R").css({ "height": $("#SelLeague_R").css("height") });
+		        $("#SelLeague_R").ACSelected({ "onSelected": SubmitLeague_Right });
+
+		    }
+	    );
+
+    </script>
+</head>
+<body>
+<table style="margin-bottom:5px;"> 
+    <tr> 
+        <td align="center" class="tableBB">Event Management > Manage</td>        
+    </tr> 
+</table>        
+<table class="selectTB" border="1" cellpadding="2" cellspacing="0" bordercolor="#9B9B9B" style="border-collapse: collapse" width="1100px">
+<tr>
+	<th>SportType:</th>
+    <td colspan="3">
+	    <select id="SelSport" onchange="ChangeSport();"> 
+            {{SportOptions}}
+	    </select>
+    </td>
+</tr>
+<tr>
+    <th>League:</th>
+    <td >
+        <select id="SelLeague_L" onchange="ChangeLeague_Left()" style="width:500px" >
+            {{LeagueOptions}}
+		</select>
+    </td>
+    <td style="width:80px"></td>
+    <td>
+        <select id="SelLeague_R" onchange="ChangeLeague_Right()" style="width:500px" >
+            {{LeagueOptions}}
+		</select>
+    </td>
+</tr> 
+<tr>
+    <th></th>
+    <td colspan="2"></td>
+    <td> or Team:
+        <select id="SelPrefix" onchange="ChangePrefix();">
+            {{PrefixOptions}}
+		</select>
+    </td>
+</tr> 
+<tr>
+    <th></th>
+    <td colspan="3" >
+        <table  class="teamTB">
+            <tr>
+	            <th>Selected</th>
+	            <td width="100px" >
+		            <span id="systemBusy" class="systemBusy" style="margin-left:6px;display:none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	            </td>
+	            <th>Not in this league</th>
+            </tr>
+            <tr>
+	            <td><select id="SelLeft" style="width:500px; height:500px;" multiple="multiple"></select></td>
+	            <td width="100px" >
+		            <input type="submit" value="<< ADD" style="width: 80px; margin-bottom:30px" onclick="AddTeam();" />
+		            <input type="submit" value="Remove >>" style="width: 80px;" onclick="RemoveTeam();" />
+	            </td>
+                <td><select id="SelRight" style="width:500px; height:500px;" multiple="multiple"></select></td>
+            </tr>
+        </table>
+    </td>
+</tr>
+</table>
+
+
+
+
+</body>
+</html>
