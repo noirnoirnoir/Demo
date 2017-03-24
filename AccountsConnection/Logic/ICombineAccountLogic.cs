@@ -1,9 +1,9 @@
-using LitangOfficial.Backoffice.BusinessLogic.Model;
-using LitangOfficial.Backoffice.BusinessLogic.ViewModel;
+using xxx.Backoffice.BusinessLogic.Model;
+using xxx.Backoffice.BusinessLogic.ViewModel;
 using System;
 using System.Collections.Generic;
 
-namespace LitangOfficial.Backoffice.BusinessLogic.Logistics
+namespace xxx.Backoffice.BusinessLogic.Logistics
 {
     public interface ICombineAccountLogic
     {        
