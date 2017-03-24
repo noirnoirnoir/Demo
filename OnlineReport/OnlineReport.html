@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Online Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="REFRESH" content="3600" />
+    <script language="javascript" src="../CommonJS/common.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="../jscalendar/calendar-blue.css" title="win2k-cold-1" />
+    <script language="JavaScript" src="../CommonJS/jquery-1.6.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../jscalendar/calendar.js"></script>
+    <script type="text/javascript" src="../jscalendar/lang/calendar-en.js"></script>
+    <script type="text/javascript" src="../jscalendar/calendar-setup.js"></script>
+    <script src="../CommonJS/FreezeTable/superTables.js" type="text/javascript"></script>
+    <script src="../CommonJS/FreezeTable/jquery.superTable.js" type="text/javascript"></script>
+    <script src="../CommonJS/FreezeTable/superTables.js" type="text/javascript"></script>
+    <link href="../CommonJS/FreezeTable/superTables.css" rel="stylesheet" type="text/css" />
+	<link href="../css/css.css" type="text/css" rel="StyleSheet" />
+<style type="text/css">
+    table#dtFilter>tbody>tr>td:nth-child(1){background-color:#39516F; text-align:center; color:#FFFFFF; font-size:13px; }
+    table#dtData { padding-top:5px;}
+    table#dtData>tbody>tr:nth-child(1),
+    table#dtData>tbody>tr:nth-child(2),
+    table#dtData>tbody>tr:nth-child(3)>th{background-color:#e5e5e5;}
+    table#dtData>tbody>tr:nth-child(4)>th{background-color:#39516F; text-align:center; white-space:nowrap; color:#FFFFFF; font-size:12px; padding:0px 3px;} 
+    table#dtData>tbody>tr:nth-child(4)>th:nth-child(1){ padding-left:5px; padding-right:5px;}
+    table#dtData>tbody>tr>td{background-color:#ABD0DC; text-align:center; white-space:nowrap; font-size:12px; padding:2px; }
+    table#dtData>tbody>tr>td:nth-child(1){ padding-left:5px; padding-right:5px;}
+    table#dtData>tbody>tr>td:nth-child(2),
+    table#dtData>tbody>tr>td:nth-child(3),
+    table#dtData>tbody>tr>td:nth-child(4){background-color:#CCCBCB; }
+	.sFData,.sHeader{background-color:#f2f7fa;}
+</style>
+<script language="javascript" type="text/javascript">
+	
+
+    $(document).ready(function () {
+
+        $(":submit").click(function () {
+
+            if ($(this).val() == "Excel") 
+                $("#Excel").val(true);
+            else
+                $("#Excel").val(false);
+
+            if (checkDateFormat_MDY($("#eventDate").val()))
+                return true;
+            else 
+            {
+                alert("Please check your date.");
+                return false;
+            }
+        }
+
+
+        );
+
+        //----------------- highlight highest number -----------------//
+        var maxValue = 0;
+        var maxRowIndex = 0;
+        var siteIndex = 0;
+
+        //highlight highest number of "Yearly Concurrent User"//
+        var YearColumnsCnt = $('table#dtData').find('tr').eq(1).find('th'); //site cnt + extra 1 column →
+
+        for (var i = 1; i < YearColumnsCnt.length; i++) //start from first Site(IBC) (seq of second yearly col = 2)
+        {
+            for (var j = 1; j < 4; j++) //start from first yearly user (seq of row = 1)
+            {
+                var indexValue = 0;
+                var index = 0;
+                if (j == 1)
+                    index = parseInt(i + 1); //cause colspan  
+                else
+                    index = parseInt(i);
+
+                indexValue = parseInt($('tr').eq(j).find('th').eq(index).text().replace(',', ''));
+                //alert("j=" + j + " ,i=" + i + " eq=," + index + " ,indexValue=" + indexValue);
+
+                if (indexValue > maxValue) 
+                {
+                    maxValue = indexValue;
+                    maxRowIndex = j - 1;
+                    siteIndex = index;
+                }
+            }
+
+            //highlight highest number of "each site"//
+            $('table#dtData').find('tr').eq(maxRowIndex).find('th').eq(siteIndex).css({ "background-color": "#FFFF37" });
+
+            maxValue = 0;
+            maxRowIndex = 0;
+            siteIndex = 0;
+        }
+        $('table#dtData').find('tr').eq(0).find('th').eq(0).css({ "background-color": "#e5e5e5" });//reset color
+
+        //highlight highest number for "each site"
+        var SiteRowsCnt = $('table#dtData').find('tr'); //time cnt+ title + year ↓
+        var SiteColumnsCnt = $('table#dtData').find('tr').eq(3).find('th'); //site cnt + extra title →
+
+        for (var i = 1; i < SiteColumnsCnt.length; i++) //start from total title (seq of col = 2)
+        {
+            for (var j = 5; j <= SiteRowsCnt.length; j++) //start from first time row (seq of row = 5)
+            {
+                var indexValue = parseInt($('tr').eq(j).find('td').eq(i).text().replace(',', ''));
+
+                if (indexValue > maxValue) 
+                {
+                    maxValue = indexValue;
+                    maxRowIndex = j - 1;
+                }
+            }
+
+            if (i == 1)// set total(seq of col = 2)
+                $('table#dtData').find('tr').eq(maxRowIndex).find('td').css({ "background-color": "#FFA042" });
+            else if (i > 3) //set each site (seq of col >= 4)
+                $('table#dtData').find('tr').eq(maxRowIndex).find('td').eq(i).css({ "background-color": "#FFFF37" });
+
+            maxValue = 0;
+            maxRowIndex = 0;
+        }
+
+		var SuperTableFixedCols = 4;
+		var SuperTableFixedRows = 4;
+		var SuperTableWidth;
+		var SuperTableHeight;
+		var ScreenWidth = $(window).width();
+		var SuperTableHeight_tmp;
+		SuperTableWidth = (ScreenWidth*0.95).toString()+"px";;
+		var TimeSequenceListLength = {{TimeSequenceListLength}};
+		SuperTableHeight_tmp = (parseInt($(window).height())*0.8);	
+		SuperTableHeight = 0;
+		var SuperTableHeight_allRows = (18+2*2)*TimeSequenceListLength; //td line-height:18px ; paading:2px
+		if ((SuperTableHeight_allRows + 18*SuperTableFixedRows) <= SuperTableHeight_tmp){
+			SuperTableHeight = SuperTableHeight_allRows + 18*SuperTableFixedRows;
+		}else{
+			SuperTableHeight = SuperTableHeight_tmp;
+		}
+		SuperTableHeight = (SuperTableHeight).toString()+"px";
+        $('table#dtData').toSuperTable({ width: SuperTableWidth, height: SuperTableHeight, fixedCols: SuperTableFixedCols, headerRows: SuperTableFixedRows });
+        $(window).resize(function(){
+			var winH = $(window).height();
+			var winW = $(window).width();
+			var headerW = $(".sFHeader").width();
+			var headerH = $(".sFHeader").height();
+			var resize_dtData_box_width = (parseInt(winW)*0.95).toString() + "px";
+			var resize_sData_width = (parseInt(winW)*0.95 - parseInt(headerW)).toString() + "px";
+			document.getElementById("dtData_box").style.width = resize_dtData_box_width;
+			$(".sData").attr("id","sData");
+			document.getElementById("sData").style.width = resize_sData_width;
+			var resize_dtData_box_height ;
+			var resize_sData_height;
+			if ((SuperTableHeight_allRows+headerH) <= (parseInt($(window).height())*0.8)){
+				resize_dtData_box_height = (SuperTableHeight_allRows + headerH).toString()+"px" ;
+				resize_sData_height = (SuperTableHeight_allRows).toString()+"px";
+			}else{
+				if (((parseInt($(window).height())*0.8)-headerH)>30){
+					resize_dtData_box_height = ((parseInt($(window).height())*0.8)).toString()+"px" ;
+					resize_sData_height = ((parseInt($(window).height())*0.8)-headerH).toString()+"px";
+				}else{
+					resize_dtData_box_height = ((parseInt($(window).height())*0.8)+30).toString()+"px" ;
+					resize_sData_height = "30px";
+				}
+			}
+			document.getElementById("dtData_box").style.height = resize_dtData_box_height;
+			document.getElementById("sData").style.height = resize_sData_height;
+		});
+    });
+</script>
+</head>
+<body>
+<b>Online Report</b> | 
+<a href="../OnlineReport_Monthly.aspx">Monthly Report</a> |
+<a href="../OnlineStat.aspx">Online Stat</a> | 
+<a href="../OnlineMembers.aspx">Online Members</a>
+<form method="get"  style="padding-top:5px; padding-bottom:5px;" >
+<table id="dtFilter">
+    <tr>
+        <td>
+            Date : <input type="text" maxlength="10" id="eventDate" name="eventDate" value="{{eventDate}}" />
+            <img src="../jscalendar/img.gif" id="f_trigger_from" style="cursor: pointer; border: 1px solid red;" title="Date selector"
+                    onmouseover="this.style.background='red';" onmouseout="this.style.background=''" width="20px" height="20px" />
+            <script type="text/javascript">
+            Calendar.setup
+                        ({
+                        inputField     :    "eventDate",      // id of the input field
+                        ifFormat       :    "mm/dd/y",       // format of the input field
+                        button         :    "f_trigger_from",   // trigger for the calendar (button ID)
+                        singleClick    :    true           // double-click mode
+                        });
+            </script>
+            <input type="submit" value="View" />
+            <input type="submit" value="Excel" />
+            <input type="hidden" id="Excel" name="Excel" value="" />
+        </td>
+    </tr>
+</table>
+</form>
+
+<table id="dtData" border="1px" bordercolor="#ababab" style="border-collapse:collapse;z-index:0">
+{{YearData}}
+{{SiteData}}
+</table>
+
+
+
+
+</body>
+</html>
