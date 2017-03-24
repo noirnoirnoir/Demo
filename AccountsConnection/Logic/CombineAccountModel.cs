@@ -1,8 +1,8 @@
-using LitangOfficial.Backoffice.BusinessLogic.Model;
+using xxx.Backoffice.BusinessLogic.Model;
 using System;
 using System.Collections.Generic;
 
-namespace LitangOfficial.Backoffice.BusinessLogic.ViewModel
+namespace xxx.Backoffice.BusinessLogic.ViewModel
 {
     public class CombineAccountModel
     {
