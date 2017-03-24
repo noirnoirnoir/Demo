@@ -1,14 +1,14 @@
-using LitangOfficial.Backoffice.BusinessLogic.Logistics;
-using LitangOfficial.Backoffice.BusinessLogic.Model;
-using LitangOfficial.Backoffice.BusinessLogic.ViewModel;
-using LitangOfficial.Backoffice.Web.Configurations;
-using LitangOfficial.Backoffice.Web.Tools;
+using xxx.Backoffice.BusinessLogic.Logistics;
+using xxx.Backoffice.BusinessLogic.Model;
+using xxx.Backoffice.BusinessLogic.ViewModel;
+using xxx.Backoffice.Web.Configurations;
+using xxx.Backoffice.Web.Tools;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Web.Mvc;
 
-namespace LitangOfficial.Backoffice.Web.Controllers.MVC
+namespace xxx.Backoffice.Web.Controllers.MVC
 {
     public class CombineAccountController : ControllerBase
     {
